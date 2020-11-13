@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
 	<meta charset="UTF-8">
-	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="./style/style.css">
 	<title>Чат программа</title>
-
+	<!-- Подключаем jQuery, а также Socket.io -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="./js/client.js" defer></script>
 </head>
+
 <body>
 	<!-- Создание меню на сайте (без функций) -->
 	<div class="main-navigation">
-		<img src="logo.png" alt="logo">
+		<img src="./image/logo.png" alt="logo">
 		<nav class="nav-navigation">
 			<ul>
 				<li class='anim-nav'>
@@ -28,117 +33,40 @@
 	<div class="container">
 		<div class="popup-fade">
 			<div class="popup">
-				<a class="popup-close" href="#">Закрыть</a>
-				<p class="lead">Укажите ваше имя и начинайте переписку</p>
-			</div>	
-		</div>
-			<div class="grid-form">
-				<div class="col1">
-					<!-- Форма для получения сообщений и имени -->
-					<h3>Форма сообщений</h3>
-					<form id="messForm">
-						<label for="name">Имя</label>
-						<br>
-						<input type="text" name="name" id="name" placeholder="Введите имя" class="form-control-name">
-						<div>
-							<label for="message">Сообщение:</label>
-							<br>
-
-							<textarea name="message" id="message" class="form-control-text" placeholder="Введите сообщение"></textarea>
-						</div>
-						<br>
-						<input type="submit" value="Отправить" class="btn-submit">
-					</form>
-				</div>
-				<div class="col2">
-					<h3>Сообщения</h3>
-					<!-- Вывод всех сообщений будет здесь -->
-					<div id="all_mess"></div>
-				</div>
+				<a class="popup-close" href="">Закрыть</a>
+				<p class="lead">Укажите</p>
+				<form id="roomForm">
+					<label for="name">Имя:</label>
+					<br/>
+					<input type="text" name="name" id="name" placeholder="Введите имя" class="form-control-name">
+					<br/>
+					<input type="text" name="room" id="room" placeholder="Введите комнату" class="form-control-room">
+					<input type="submit" value="Отправить" class="btn-submit-room">
+				</form>
 			</div>
+		</div>
+		<div class="grid-form">
+			<div class="col1">
+				<!-- Форма для получения сообщений и имени -->
+				<h3>Форма сообщений</h3>
+				<form id="messForm">
+					<div>
+						<label for="message">Сообщение:</label>
+						<br>
+						<textarea name="message" id="message" class="form-control-text"
+							placeholder="Введите сообщение"></textarea>
+					</div>
+					<br>
+					<input type="submit" value="Отправить" class="btn-submit">
+				</form>
+			</div>
+			<div class="col2">
+				<h3>Сообщения</h3>
+				<!-- Вывод всех сообщений будет здесь -->
+				<div id="all_mess"></div>
+			</div>
+		</div>
 	</div>
-	<!-- Подключаем jQuery, а также Socket.io -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
-	<script>
-		window.onload = function(){
-			window.dispatchEvent(new Event("scroll"));
-		}
-		window.addEventListener("scroll",function(){
-			document.getElementsByClassName("main-navigation").style.background = "rgb(125,13,24)";
-		});
-		// Функция для работы с данными на сайте
-		$(function() {
-			// Включаем socket.io и отслеживаем все подключения
-			var socket = io.connect();
-			// Делаем переменные на:
-			var $form = $("#messForm"); // Форму сообщений
-			var $name = $("#name"); // Поле с именем
-			var $textarea = $("#message"); // Текстовое поле
-			var $all_messages = $("#all_mess"); // Блок с сообщениями
-			var count=0;
-			// Отслеживаем нажатие на кнопку в форме сообщений
-			$form.submit(function(event) {
-				var alertClass;
-				if (count==0){
-					count+=1;
-					alertClass = 'msgClass1';
-				}else if(count==1){
-					count-=1;
-					alertClass = 'msgClass2';
-				}
-
-				// Предотвращаем классическое поведение формы
-				event.preventDefault();
-				// В сокет отсылаем новое событие 'send mess',
-				// в событие передаем различные параметры и данные
-				socket.emit('send mess', {mess: $textarea.val(), name: $name.val(), className: alertClass});
-				// Очищаем поле с сообщением
-				$textarea.val('');
-			});
-
-			// Здесь отслеживаем событие 'add mess', 
-			// которое должно приходить из сокета в случае добавления нового сообщения
-			socket.on('add mess', function(data) {
-				// Встраиваем полученное сообщение в блок с сообщениями
-				// У блока с сообщением будет тот класс, который соответвует пользователю что его отправил
-				$all_messages.append("<div class='" + data.className + "'><b>" + data.name + "</b>: " + data.mess + "</div>");
-			});
-
-		});
-		$(document).ready(function($) {
-			// Клик по ссылке "Закрыть".
-
-			$('.popup-close').click(function() {
-				$(this).parents('.popup-fade').fadeOut();
-				return false;
-			});        
-
-			// Закрытие по клавише Esc.
-			$(document).keydown(function(e) {
-				if (e.keyCode === 27) {
-					e.stopPropagation();
-					$('.popup-fade').fadeOut();
-				}
-			});
-
-			// Клик по фону, но не по окну.
-			$('.popup-fade').click(function(e) {
-				if ($(e.target).closest('.popup').length == 0) {
-					$(this).fadeOut();					
-				}
-			});	
-			$(window).scroll(function() { 
-				if ($(document).scrollTop()) {
-					$(".main-navigation").css("background-color", "rgba(255, 255, 255, 0.7)");
-					$(".main-navigation").css("box-shadow", "0px 0px 10px 20px rgba(255, 255, 255, 0.7)");
-					$(".text-nav").css('color','black');
-				} else {
-					$(".main-navigation").css("background-color", "rgba(255, 255, 255, 0.5)");
-					$(".main-navigation").css("box-shadow", "0px 0px 10px 20px rgba(255, 255, 255, 0.5)");
-				}
-			});
-		});
-	</script>
 </body>
+
 </html>

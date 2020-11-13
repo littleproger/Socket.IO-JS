@@ -17,9 +17,6 @@
       .grid-form h3{
             font-size: var(--size-nav-text-low);
       }
-      .form-control-name{
-            width: 113%;
-      }
       .form-control-text{
             width: 120%;
             height: 150px;
@@ -35,9 +32,6 @@
       }
       .grid-form h3{
             font-size: var(--size-nav-text-big);
-      }
-      .form-control-name{
-            width: 113%;
       }
       .form-control-text{
             width: 120%;
@@ -151,15 +145,6 @@ body{
 }
 .messForm{
       position: fixed;
-}
-.form-control-name{
-      margin-top: 20px;
-      margin-bottom: 20px;
-      padding: 10px;
-      border: none;
-      color:white;
-      background:none;
-      box-shadow: 2px 2px 10px 6px var(--main-color-scnd);
 }
 .form-control-text{
       height: 150px;
