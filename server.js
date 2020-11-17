@@ -16,40 +16,33 @@ app.get('/', function (request, respons) {
 });
 
 // Массив со всеми подключениями
-var connections = [];
+var users=[];
+var usersIds={};
 // Функция, которая сработает при подключении к странице
 // Считается как новый пользователь
 io.sockets.on('connection', async (socket) =>{
 	console.log("Успешное соединение");
-	// Добавление нового соединения в массив
-	connections.push(socket.id);
+	users.push(socket.id);
 	// Функция, которая срабатывает при отключении от сервера
 	socket.on('disconnect', function (data) {
 		// Удаления пользователя из массива
-		connections.splice(connections.indexOf(socket), 1);
+		users.splice(users.indexOf(socket), 1);
 		console.log("Отключились");
+
 	});
 	//Создание комнаты
-	socket.on("joinRoom", function (data) {
-		socket.join(data.room);
-		console.log("you in room N:"+data.room+"yr name: "+data.name);
-		io.sockets.emit('add state',{name:data.name,room:data.room});
+	socket.on("start", function (data) {
+		socket.join(socket.id);
+		io.to(socket.id).emit('add state id',{id:socket.id});
+		io.sockets.emit('add new user',{name:data.name, id:socket.id});
+	});
+	socket.on('join to room',function(data){
+		socket.join(data.id);
 	});
 	socket.on('send message', (data) => {
-		console.log(data)
-		// socket.to(data.room).emit('add mess', {mess:data.mess,
-		// 							name:data.name,});
+		console.log(data.room);
 		io.to(data.room).emit('add mess', {mess:data.mess,
-			name:data.name,})
-	});
-	// Функция получающая сообщение от какого-либо пользователя
-	socket.on('send mess', function (data) {
-		// Внутри функции мы передаем событие 'add mess',
-		// которое будет вызвано у всех пользователей и у них добавиться новое сообщение 
-		io.sockets.emit('add mess', {
-			mess: data.mess,
-			name: data.name,
-		});
+			name:data.name, id:socket.id});
 	});
 	// console.log(connections);
 });

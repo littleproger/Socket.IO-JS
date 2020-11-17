@@ -29,7 +29,7 @@
 			</ul>
 		</nav>
 	</div>
-	<!-- Основная часть страницы -->
+	<!-- Modal part -->
 	<div class="container">
 		<div class="popup-fade">
 			<div class="popup">
@@ -37,35 +37,41 @@
 				<p class="lead">Укажите</p>
 				<form id="roomForm">
 					<label for="name">Имя:</label>
-					<br/>
+					<br />
 					<input type="text" name="name" id="name" placeholder="Введите имя" class="form-control-name">
-					<br/>
-					<input type="text" name="room" id="room" placeholder="Введите комнату" class="form-control-room">
+					<br />
 					<input type="submit" value="Отправить" class="btn-submit-room">
 				</form>
 			</div>
 		</div>
-		<div class="grid-form">
-			<div class="col1">
-				<!-- Форма для получения сообщений и имени -->
-				<h3>Форма сообщений</h3>
-				<form id="messForm">
-					<div>
-						<label for="message">Сообщение:</label>
-						<br>
-						<textarea name="message" id="message" class="form-control-text"
-							placeholder="Введите сообщение"></textarea>
-					</div>
-					<br>
-					<input type="submit" value="Отправить" class="btn-submit">
-				</form>
-			</div>
-			<div class="col2">
-				<h3>Сообщения</h3>
-				<!-- Вывод всех сообщений будет здесь -->
-				<div id="all_mess"></div>
+	</div>
+	<!-- Основная часть страницы -->
+	<div class="main-block">
+		<div class="userslist">
+			<ul id='users'>
+				
+			</ul>
+		</div>
+		<div class="messng-box">
+			<div class="grid-form">
+				<div class="row1">
+					<h3>Сообщения</h3>
+					<!-- Вывод всех сообщений будет здесь -->
+					<div id="all_mess"></div>
+				</div>
+				<div class="row2">
+					<!-- Форма для получения сообщений и имени -->
+					<form id="messForm" class="send-mes-box">
+						<div>
+							<textarea name="message" id="message" class="form-control-text"
+								placeholder="Введите сообщение"></textarea>
+						</div>
+						<input type="submit" value="Отправить" class="btn-submit">
+					</form>
+				</div>
 			</div>
 		</div>
+	</div>
 	</div>
 </body>
 

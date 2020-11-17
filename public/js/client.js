@@ -1,69 +1,84 @@
-// window.onload = function(){
-//     window.dispatchEvent(new Event("scroll"));
 // }
 // Функция для работы с данными на сайте
-$(function() {
+$(function () {
     // Включаем socket.io и отслеживаем все подключения
     var socket = io.connect();
     // Делаем переменные на:
-    var formMsg = $("#messForm"); // Форму сообщений
-    var formRoom = $("#roomForm");//Форму комнаты
-    var name = $("#name"); // Поле с именем
-    var textarea = $("#message"); // Текстовое поле
-    var room = $("#room");
-    var all_messages = $("#all_mess"); // Блок с сообщениями
-    var count=0;
+    var $formMsg = $("#messForm"); // Форму сообщений
+    var $formRoom = $("#roomForm"); //Форму комнаты
+    var $name = $("#name"); // Поле с именем
+    var $textarea = $("#message"); // Текстовое поле
+    var $all_messages = $("#all_mess"); // Блок с сообщениями
+    var $users = $("#users");
+    var $clkUser = $(".clkUser");
     var alertClass;
-    formRoom.submit(function(event) {
-        console.log(room.val()+":"+name.val());
+    var id, room;
+    var usersId=[];
+    $formRoom.submit(function (event) {
         // Предотвращаем классическое поведение формы
         event.preventDefault();
-        socket.emit('joinRoom', {room:room.val(),name:name.val()});
+        socket.emit('start', {
+            name: $name.val()
+        });
+        $(this).parents('.popup-fade').fadeOut();
     });
+    socket.on('add state id', function (data) {
+        id = data.id;
+    });
+    socket.on('add new user', function (data) {
+        usersId.push(data.id);
+        $users.append("<li class='clkUser' id='(\"" + data.id + "\")' ><h2>" + data.name + "</h2></li>");
+    });
+    $(document).on('click', '.clkUser', function () {
+        room = $(this).attr("id");
+        room = room.substring(2, room.length - 2);
+        socket.emit('join to room', {
+            id: room
+        });
+    });
+
     // Отслеживаем нажатие на кнопку в форме сообщений
-    formMsg.submit(function(event) {
+    $formMsg.submit(function (event) {
         // Предотвращаем классическое поведение формы
         event.preventDefault();
         // В сокет отсылаем новое событие 'send mess',
         // в событие передаем различные параметры и данные
-        socket.emit('send message', {mess: textarea.val(), name: name.val(), room:room.val()});
+        socket.emit('send message', {
+            mess: $textarea.val(),
+            name: $name.val(),
+            room: room
+        });
         // Очищаем поле с сообщением
-        textarea.val('');
+        $textarea.val('');
     });
-    socket.on('add state',function(data){
-        nickname=data.name;
-        roomName=data.room;
-    })
     // Здесь отслеживаем событие 'add mess', 
     // которое должно приходить из сокета в случае добавления нового сообщения
-    socket.on('add mess', function(data) {
-        if (count == 0) {
-            count += 1;
-            alertClass = 'msgClass1';
-        } else if (count == 1) {
-            count -= 1;
+    socket.on('add mess', function (data) {
+        if (id == data.id) {
             alertClass = 'msgClass2';
+            // Встраиваем полученное сообщение в блок с сообщениями
+            $all_messages.append("<div class='" + alertClass + "'><div><b>" + data.name + "</b><p>" + data.mess + "</p></div></div>");
+        } else {
+            if(usersId.includes(data.id)){
+                null;
+            }else{
+                usersId.push(data.id);
+                $users.append("<li class='clkUser' id='(\"" + data.id + "\")' ><h2>" + data.name + "</h2></li>"); 
+            }
+            alertClass = 'msgClass1';
+            // Встраиваем полученное сообщение в блок с сообщениями
+            $all_messages.append("<div class='" + alertClass + "'><div><b>" + data.name + "</b><p>" + data.mess + "</p></div></div>");
         }
-        // Встраиваем полученное сообщение в блок с сообщениями
-        // У блока с сообщением будет тот класс, который соответвует пользователю что его отправил
-        all_messages.append("<div class='" + alertClass + "'><b>" + data.name + "</b>: " + data.mess + "</div>");
     });
-
 });
-$(document).ready(function($) {
+$(document).ready(function ($) {
     // Клик по ссылке "Закрыть".
-    $('.popup-close').click(function() {
+    $('.popup-close').click(function () {
         $(this).parents('.popup-fade').fadeOut();
         return false;
-    }); 
-    // $('.btn-submit-room').click(function() {
-    //     $(this).parents('.popup-fade').fadeOut();
-    //     return false;
-    // });    
-
-
+    });
     // Закрытие по клавише Esc.
-    $(document).keydown(function(e) {
+    $(document).keydown(function (e) {
         if (e.keyCode === 27) {
             e.stopPropagation();
             $('.popup-fade').fadeOut();
@@ -71,16 +86,16 @@ $(document).ready(function($) {
     });
 
     // Клик по фону, но не по окну.
-    $('.popup-fade').click(function(e) {
+    $('.popup-fade').click(function (e) {
         if ($(e.target).closest('.popup').length == 0) {
-            $(this).fadeOut();					
+            $(this).fadeOut();
         }
-    });	
-    $(window).scroll(function() { 
+    });
+    $(window).scroll(function () {
         if ($(document).scrollTop()) {
             $(".main-navigation").css("background-color", "rgba(255, 255, 255, 0.7)");
             $(".main-navigation").css("box-shadow", "0px 0px 10px 20px rgba(255, 255, 255, 0.7)");
-            $(".text-nav").css('color','black');
+            $(".text-nav").css('color', 'black');
         } else {
             $(".main-navigation").css("background-color", "rgba(255, 255, 255, 0.5)");
             $(".main-navigation").css("box-shadow", "0px 0px 10px 20px rgba(255, 255, 255, 0.5)");
