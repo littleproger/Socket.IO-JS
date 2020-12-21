@@ -29,5 +29,6 @@ Note: функціонал ще може вдосконалюватись або
     ModgoDB
     
 ---
+Нижче зображено зразок веб-сайту, те яким він є на даний момент, проте це тільки чорновий варіант.
 
 ![](https://github.com/littleproger/Socket.IO-JS/blob/main/img/socket.png "screnshoot")
