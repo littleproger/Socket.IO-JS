@@ -75,10 +75,10 @@ Express це мінімалістичний і гнучкий веб-фрейм�
 
 ----
 ### ***Блок-схема:***
-
+![](https://github.com/littleproger/SocketMsg/blob/main/img/diagram1.png "diagram")
 ----
 ### ***Timeline:***
- 
+![](https://github.com/littleproger/SocketMsg/blob/main/img/diagram2.png "timeline diagram")
 ---
 Нижче зображено зразок веб-додатку, те яким він є на даний момент, проте це тільки чорновий варіант.
 
